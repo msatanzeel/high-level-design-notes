@@ -11,9 +11,9 @@
 ## Progress Overview
 
 **Total Topics**: 18
-**Completed**: 2
+**Completed**: 3
 **In Progress**: 0
-**Not Started**: 16
+**Not Started**: 15
 
 ---
 
@@ -30,7 +30,7 @@
 
 | # | Topic | Status | Date Completed | Notes |
 |---|-------|--------|----------------|-------|
-| 03 | Eviction Policies | ⬜ Not Started | - | LRU, LFU, FIFO, Random, TTL-based |
+| 03 | Eviction Policies | ✅ Completed | 2026-03-29 | LRU, LFU, FIFO, Random, TTL - comparison and use cases |
 
 ### 3️⃣ Cache Invalidation Strategies
 
@@ -86,9 +86,9 @@
 ## Study Sessions
 
 ### Session 1 - 2026-03-29
-- **Topics Completed**: 01-what-is-caching.md ✅, 02-benefits-and-tradeoffs.md ✅
+- **Topics Completed**: 01-what-is-caching.md ✅, 02-benefits-and-tradeoffs.md ✅, 03-eviction-policies.md ✅
 - **Status**: In Progress (breadth-first approach)
-- **Notes**: Created flow diagrams, decision framework for when to cache
+- **Notes**: Covered foundations, created visual diagrams for all topics
 
 ---
 
