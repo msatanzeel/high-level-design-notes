@@ -11,9 +11,9 @@
 ## Progress Overview
 
 **Total Topics**: 18
-**Completed**: 1
+**Completed**: 2
 **In Progress**: 0
-**Not Started**: 17
+**Not Started**: 16
 
 ---
 
@@ -24,7 +24,7 @@
 | # | Topic | Status | Date Completed | Notes |
 |---|-------|--------|----------------|-------|
 | 01 | What is Caching | ✅ Completed | 2026-03-29 | Core concepts, cache hit/miss, when to use/avoid |
-| 02 | Benefits and Tradeoffs | ⬜ Not Started | - | Performance gains, cost savings, hidden costs |
+| 02 | Benefits and Tradeoffs | ✅ Completed | 2026-03-29 | Speed vs cost, decision framework, when to cache/skip |
 
 ### 2️⃣ Cache Eviction Policies
 
@@ -86,9 +86,9 @@
 ## Study Sessions
 
 ### Session 1 - 2026-03-29
-- **Topics Completed**: 01-what-is-caching.md ✅
+- **Topics Completed**: 01-what-is-caching.md ✅, 02-benefits-and-tradeoffs.md ✅
 - **Status**: In Progress (breadth-first approach)
-- **Notes**: Created basic caching flow diagram
+- **Notes**: Created flow diagrams, decision framework for when to cache
 
 ---
 
