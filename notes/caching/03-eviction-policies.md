@@ -216,6 +216,39 @@ Different policies have different answers:
 - **Best choice**: FIFO
 - **Why**: Simple queue semantics
 
+## Decision Framework: How To Choose
+
+### The Key Question
+**"What makes data valuable in my cache?"**
+
+Different answers → Different policies:
+
+### 1. "Recently accessed data will be accessed again soon"
+**→ Use LRU**
+- **Pattern**: Temporal locality (users browse back/forth)
+- **Examples**: E-commerce browsing, user sessions, API responses
+- **Why LRU wins**: Keeps recently-touched items hot
+
+### 2. "Frequently accessed data is more valuable"
+**→ Use LFU**
+- **Pattern**: Power-law distribution (top 1% = 90% traffic)
+- **Examples**: Video streaming (Netflix/YouTube), CDN content
+- **Why LFU wins**: Popular content stays regardless of recency
+
+### 3. "All data has equal value"
+**→ Use FIFO**
+- **Pattern**: Write-once, read-once, discard
+- **Examples**: Log buffers, message queues
+- **Why FIFO works**: Simple queue semantics, no hot/cold distinction
+
+### Critical Distinction: LRU vs LFU
+
+**When frequency and recency align** → LRU is simpler (O(1) vs O(log n))
+- API Gateway: Popular endpoints are BOTH frequent AND recent
+
+**When frequency and recency diverge** → LFU wins
+- Video CDN: Old popular movie (high frequency, not recent) vs viral video yesterday (recent, low frequency)
+
 ## Key Takeaways
 - ✅ **Default to LRU + TTL** - works for 90% of cases
 - ✅ **Wrong policy = 3x worse hit ratio** (seen 92% → 35%)
@@ -226,17 +259,37 @@ Different policies have different answers:
 
 ## Interview Talking Points
 
-**When asked about eviction:**
+### When Asked: "How would you design the cache eviction policy?"
 
-**You:** "I'd default to **LRU + TTL**. LRU handles eviction when memory fills up by removing least-recently-used items, which works well for temporal locality. TTL ensures we're not serving stale responses beyond their valid lifetime. We'd implement with a doubly-linked list + hashmap for O(1) access and eviction."
+**Step 1: Ask about access patterns**
 
-**If asked "Why not LFU?":**
+**You:** "I'd need to understand the access patterns first. Are we seeing the same data accessed repeatedly (temporal locality)? Or is there a power-law distribution where top 1% of items get 90% of traffic?"
 
-**You:** "LFU has the stale popular item problem. If an endpoint was popular yesterday but traffic shifted today, LFU keeps it due to high historical counter. LRU adapts faster - if that endpoint isn't used recently, it gets evicted. For most API traffic, LRU is more adaptive."
+**Step 2: Default recommendation**
 
-**If asked "What about Random?":**
+**You:** "I'd default to **LRU + TTL**. LRU handles eviction when memory fills up by removing least-recently-used items, which works well for temporal locality patterns we see in most web applications. TTL ensures we're not serving stale responses beyond their valid lifetime. We'd implement with a doubly-linked list + hashmap for O(1) access and eviction."
 
-**You:** "Random is surprisingly effective - gets 80-90% of LRU's hit ratio with way less complexity. No metadata tracking, no coordination overhead. If this were a distributed cache across 100 nodes where coordination is expensive, Random would be worth considering. But for centralized cache with predictable patterns, LRU gives better hit ratio without much extra complexity."
+**Step 3: Explain the reasoning**
+
+**You:** "LRU works because popular endpoints are BOTH frequently AND recently accessed. If an endpoint gets 1000 hits/day, it's constantly recent, so LRU keeps it cached. If traffic shifts away from an endpoint, LRU automatically evicts it. This adaptability is key."
+
+### If Asked: "Why not LFU?"
+
+**You:** "LFU has the stale popular item problem. If an endpoint was viral yesterday but traffic shifted today, LFU keeps it cached due to high historical counter. LRU adapts faster - if that endpoint isn't used recently, it gets evicted."
+
+**Follow-up:** "However, if we had a video CDN with power-law distribution - where popular content stays popular for weeks/months - then LFU with decay would be better. The key is whether frequency and recency align or diverge."
+
+### If Asked: "What about Random?"
+
+**You:** "Random is surprisingly effective - gets 80-90% of LRU's hit ratio with way less complexity. For a distributed cache across 100 nodes where coordination is expensive, Random would be compelling. But for centralized Redis with predictable patterns, LRU gives 10-15% better hit ratio without much complexity."
+
+### Scenario-Based Answer
+
+**Interviewer:** "API gateway caching responses from 50K endpoints. Top 5% get most traffic. Which policy?"
+
+**You:** "I'd start with **LRU + TTL**. Here's why: those top 5% endpoints aren't just frequently accessed - they're constantly accessed throughout the day, making them both frequent AND recent. LRU handles this perfectly. If we later see that certain endpoints stay popular for weeks regardless of daily patterns, we could switch to LFU with decay. But LRU is the safer starting point - simpler (O(1)), battle-tested, and handles 90% of cases."
+
+**Why LFU wouldn't be first choice:** "For API gateway, traffic patterns can shift quickly. A campaign endpoint might be hot today, cold tomorrow. LRU adapts immediately. LFU would keep yesterday's hot endpoint cached until its counter decays."
 
 ## Related Concepts
 - **[Previous: 02-benefits-and-tradeoffs.md](02-benefits-and-tradeoffs.md)** - When caching is worth it
